@@ -1,12 +1,13 @@
 package gmail
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/jelmersnoeck/gmail/gmail/email"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -62,20 +63,11 @@ func NewGmailClient(email string) GmailClient {
 	return GmailClient{srv, email}
 }
 
-// Email represents an email fetched from your gmail account.
-type Email struct {
-	Subject string
-	// Base64 URLEncoded content
-	Body   string
-	Id     string
-	Sender string
-}
-
-func (c *GmailClient) Email(id string) (Email, error) {
+func (c *GmailClient) Email(id string) (email.Email, error) {
 	call := c.srv.Users.Messages.Get(c.email, id)
 	res, err := call.Format("full").Do()
 
-	email := Email{}
+	email := email.Email{}
 
 	if err != nil {
 		return email, err
@@ -104,9 +96,4 @@ func getMessageBody(parts []*gmail.MessagePart) string {
 
 func getMessageSender(headers []*gmail.MessagePartHeader) string {
 	return ""
-}
-
-func (e Email) HTML() (string, error) {
-	data, err := base64.URLEncoding.DecodeString(e.Body)
-	return string(data), err
 }
