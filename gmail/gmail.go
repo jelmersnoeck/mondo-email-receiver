@@ -1,38 +1,45 @@
 package gmail
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/jelmersnoeck/mondo-email-receiver/email"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/gmail/v1"
 )
 
 // getClient uses a Context and Config to retrieve a Token
 // then generate a Client. It returns the generated Client.
 func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
-	tok, _ := tokenFromFile("credentials.json")
-	return config.Client(ctx, tok)
+	return config.Client(ctx, oauth2Token())
 }
 
 // tokenFromFile retrieves a Token from a given file path.
 // It returns the retrieved Token and any read error encountered.
-func tokenFromFile(file string) (*oauth2.Token, error) {
-	f, err := os.Open(file)
-	if err != nil {
-		return nil, err
+func oauth2Token() *oauth2.Token {
+	tm, _ := time.Parse("2006-Jan-02", "2015-Nov-13")
+	return &oauth2.Token{
+		AccessToken:  os.Getenv("GOOGLE_ACCESS_TOKEN"),
+		TokenType:    "Bearer",
+		RefreshToken: os.Getenv("GOOGLE_REFRESH_TOKEN"),
+		Expiry:       tm,
 	}
-	t := &oauth2.Token{}
-	err = json.NewDecoder(f).Decode(t)
-	defer f.Close()
-	return t, err
+}
+
+func getConfig() *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://accounts.google.com/o/oauth2/auth",
+			TokenURL: "https://accounts.google.com/o/oauth2/token",
+		},
+	}
 }
 
 // GmailClient represent a connection with Gmail
@@ -44,16 +51,7 @@ type GmailClient struct {
 func NewGmailClient(email string) GmailClient {
 	ctx := context.Background()
 
-	b, err := ioutil.ReadFile("client_secret.json")
-	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
-	}
-
-	config, err := google.ConfigFromJSON(b, gmail.GmailReadonlyScope)
-	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
-	}
-	client := getClient(ctx, config)
+	client := getClient(ctx, getConfig())
 
 	srv, err := gmail.New(client)
 	if err != nil {
