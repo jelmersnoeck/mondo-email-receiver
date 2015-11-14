@@ -7,10 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
-	"os/user"
-	"path/filepath"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
@@ -55,14 +52,7 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 // tokenCacheFile generates credential file path/filename.
 // It returns the generated credential path/filename.
 func tokenCacheFile() (string, error) {
-	usr, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-	tokenCacheDir := filepath.Join(usr.HomeDir, ".credentials")
-	os.MkdirAll(tokenCacheDir, 0700)
-	return filepath.Join(tokenCacheDir,
-		url.QueryEscape("gmail-go-quickstart.json")), err
+	return "credentials.json", nil
 }
 
 // tokenFromFile retrieves a Token from a given file path.
@@ -127,8 +117,6 @@ func showParts(parts []*gmail.MessagePart) {
 			if part.MimeType == "text/html" {
 				data, _ := base64.URLEncoding.DecodeString(part.Body.Data)
 				fmt.Println(string(data))
-
-				ioutil.WriteFile("email.html", data, 0777)
 			}
 		}
 	}
