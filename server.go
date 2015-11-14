@@ -1,14 +1,23 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
+	"log"
+	"net/http"
+	"os"
 
 	"github.com/go-martini/martini"
 	"github.com/jelmersnoeck/mondo-email-receiver/gmail"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	g := gmail.NewGmailClient("mondoreceipt@gmail.com")
 
 	m := martini.Classic()
@@ -31,7 +40,16 @@ func main() {
 		}
 
 		go func(jsonData []byte) {
-			fmt.Println(string(jsonData))
+			url := os.Getenv("WEBHOOK_URL")
+			req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+			req.Header.Set("Content-Type", "application/json")
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			if err != nil {
+				panic(err)
+			}
+			defer resp.Body.Close()
 		}(jsonData)
 
 		html, err := mail.HTML()
