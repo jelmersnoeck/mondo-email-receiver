@@ -1,0 +1,44 @@
+{
+	"ImportPath": "github.com/jelmersnoeck/mondo-email-receiver",
+	"GoVersion": "go1.5.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/codegangsta/inject",
+			"Comment": "v1.0-rc1-10-g33e0aa1",
+			"Rev": "33e0aa1cb7c019ccc3fbe049a8262a6403d30504"
+		},
+		{
+			"ImportPath": "github.com/go-martini/martini",
+			"Comment": "v1.0-169-g15a4762",
+			"Rev": "15a47622d6a9b3e6a1eaca2681e4850f612471ea"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "1d9fd3b8333e891c0e7353e1adcfe8a612573033"
+		},
+		{
+			"ImportPath": "golang.org/x/oauth2",
+			"Rev": "3314c49c831be809de14a5e6c7c68f4c83733a69"
+		},
+		{
+			"ImportPath": "google.golang.org/api/gensupport",
+			"Rev": "e4bb4e4880a5cabeec41cbff1095e86059f2f908"
+		},
+		{
+			"ImportPath": "google.golang.org/api/gmail/v1",
+			"Rev": "e4bb4e4880a5cabeec41cbff1095e86059f2f908"
+		},
+		{
+			"ImportPath": "google.golang.org/api/googleapi",
+			"Rev": "e4bb4e4880a5cabeec41cbff1095e86059f2f908"
+		},
+		{
+			"ImportPath": "google.golang.org/cloud/compute/metadata",
+			"Rev": "e06e2bd3393c9e08d519da7ac2bb392dbb3c12eb"
+		},
+		{
+			"ImportPath": "google.golang.org/cloud/internal",
+			"Rev": "e06e2bd3393c9e08d519da7ac2bb392dbb3c12eb"
+		}
+	]
+}
