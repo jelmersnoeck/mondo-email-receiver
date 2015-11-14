@@ -13,6 +13,11 @@
 			"Rev": "15a47622d6a9b3e6a1eaca2681e4850f612471ea"
 		},
 		{
+			"ImportPath": "github.com/joho/godotenv",
+			"Comment": "v1-8-g443e926",
+			"Rev": "443e926da0d793d3b3f32118b1e4ba52ada26503"
+		},
+		{
 			"ImportPath": "golang.org/x/net/context",
 			"Rev": "1d9fd3b8333e891c0e7353e1adcfe8a612573033"
 		},
@@ -31,14 +36,6 @@
 		{
 			"ImportPath": "google.golang.org/api/googleapi",
 			"Rev": "e4bb4e4880a5cabeec41cbff1095e86059f2f908"
-		},
-		{
-			"ImportPath": "google.golang.org/cloud/compute/metadata",
-			"Rev": "e06e2bd3393c9e08d519da7ac2bb392dbb3c12eb"
-		},
-		{
-			"ImportPath": "google.golang.org/cloud/internal",
-			"Rev": "e06e2bd3393c9e08d519da7ac2bb392dbb3c12eb"
 		}
 	]
 }
