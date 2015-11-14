@@ -1,9 +1,8 @@
-package main
+package gmail
 
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -18,7 +17,7 @@ import (
 // getClient uses a Context and Config to retrieve a Token
 // then generate a Client. It returns the generated Client.
 func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
-	tok, err := tokenFromFile("credentials.json")
+	tok, _ := tokenFromFile("credentials.json")
 	return config.Client(ctx, tok)
 }
 
@@ -35,7 +34,13 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 	return t, err
 }
 
-func main() {
+// GmailClient represent a connection with Gmail
+type GmailClient struct {
+	srv   *gmail.Service
+	email string
+}
+
+func NewGmailClient(email string) GmailClient {
 	ctx := context.Background()
 
 	b, err := ioutil.ReadFile("client_secret.json")
@@ -54,25 +59,54 @@ func main() {
 		log.Fatalf("Unable to retrieve gmail Client %v", err)
 	}
 
-	call := srv.Users.Messages.Get("mondoreceipt@gmail.com", "1510670a190c8455")
-
-	res, _ := call.Format("full").Do()
-
-	data := ""
-	showParts(res.Payload.Parts)
-
-	fmt.Println(data)
+	return GmailClient{srv, email}
 }
 
-func showParts(parts []*gmail.MessagePart) {
+// Email represents an email fetched from your gmail account.
+type Email struct {
+	Subject string
+	// Base64 URLEncoded content
+	Body   string
+	Id     string
+	Sender string
+}
+
+func (c *GmailClient) Email(id string) (Email, error) {
+	call := c.srv.Users.Messages.Get(c.email, id)
+	res, err := call.Format("full").Do()
+
+	email := Email{}
+
+	if err != nil {
+		return email, err
+	}
+
+	email.Id = id
+	email.Body = getMessageBody(res.Payload.Parts)
+	email.Sender = getMessageSender(res.Payload.Headers)
+
+	return email, nil
+}
+
+func getMessageBody(parts []*gmail.MessagePart) string {
 	for _, part := range parts {
 		if len(part.Parts) > 0 {
-			showParts(part.Parts)
+			return getMessageBody(part.Parts)
 		} else {
 			if part.MimeType == "text/html" {
-				data, _ := base64.URLEncoding.DecodeString(part.Body.Data)
-				fmt.Println(string(data))
+				return part.Body.Data
 			}
 		}
 	}
+
+	return ""
+}
+
+func getMessageSender(headers []*gmail.MessagePartHeader) string {
+	return ""
+}
+
+func (e Email) HTML() (string, error) {
+	data, err := base64.URLEncoding.DecodeString(e.Body)
+	return string(data), err
 }
