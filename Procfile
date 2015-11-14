@@ -1,0 +1,1 @@
+web: mondo-email-receiver
