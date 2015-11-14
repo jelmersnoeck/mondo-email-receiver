@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/go-martini/martini"
 	"github.com/jelmersnoeck/mondo-email-receiver/gmail"
 )
@@ -15,13 +18,23 @@ func main() {
 	})
 
 	m.Get("/emails/:id", func(params martini.Params) string {
-		email, err := g.Email(params["id"])
+		mail, err := g.Email(params["id"])
 
 		if err != nil {
 			return err.Error()
 		}
 
-		html, err := email.HTML()
+		jsonData, err := json.Marshal(mail)
+
+		if err != nil {
+			return err.Error()
+		}
+
+		go func(jsonData []byte) {
+			fmt.Println(string(jsonData))
+		}(jsonData)
+
+		html, err := mail.HTML()
 
 		if err != nil {
 			return err.Error()
