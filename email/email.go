@@ -4,11 +4,10 @@ import "encoding/base64"
 
 // Email represents an email fetched from your gmail account.
 type Email struct {
-	Subject string
-	// Base64 URLEncoded content
-	Body   string
-	Id     string
-	Sender string
+	Subject string `json:"subject"`
+	Body    string `json:"body"` // Base64.URLEncoding
+	Id      string `json:"id"`
+	Sender  string `json:"sender"`
 }
 
 // HTML the decoded email body as HTML contents and an error if decoding failed.
