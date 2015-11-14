@@ -76,6 +76,7 @@ func (c *GmailClient) Email(id string) (email.Email, error) {
 	email.Id = id
 	email.Body = getMessageBody(res.Payload.Parts)
 	email.Sender = getMessageSender(res.Payload.Headers)
+	email.Subject = getMessageSubject(res.Payload.Headers)
 
 	return email, nil
 }
@@ -95,5 +96,20 @@ func getMessageBody(parts []*gmail.MessagePart) string {
 }
 
 func getMessageSender(headers []*gmail.MessagePartHeader) string {
+	return getMessageHeader(headers, "From")
+}
+
+func getMessageSubject(headers []*gmail.MessagePartHeader) string {
+	return getMessageHeader(headers, "Subject")
+}
+
+func getMessageHeader(headers []*gmail.MessagePartHeader, wanted string) string {
+	for _, header := range headers {
+		if header.Name == wanted {
+			return header.Value
+		}
+
+	}
+
 	return ""
 }
