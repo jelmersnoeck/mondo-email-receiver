@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/jelmersnoeck/gmail/gmail/email"
+	"github.com/jelmersnoeck/mondo-email-receiver/email"
 
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
