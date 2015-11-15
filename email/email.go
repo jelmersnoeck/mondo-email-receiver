@@ -18,7 +18,7 @@ type Email struct {
 func (e Email) HTML() (html string, err error) {
 	data, err := base64.URLEncoding.DecodeString(e.Body)
 
-	if err == nil && len(e.Attachments) > 0 {
+	if err == nil {
 		html = string(data)
 
 		if len(e.Attachments) > 0 {
