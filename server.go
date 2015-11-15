@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +14,6 @@ import (
 )
 
 func main() {
-
 	if martini.Env != "production" {
 		err := godotenv.Load()
 		if err != nil {
@@ -50,7 +50,7 @@ func main() {
 			client := &http.Client{}
 			resp, err := client.Do(req)
 			if err != nil {
-				panic(err)
+				fmt.Println(err)
 			}
 			defer resp.Body.Close()
 		}(jsonData)
