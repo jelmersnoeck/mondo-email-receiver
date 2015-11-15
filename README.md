@@ -19,3 +19,7 @@ linked properly in the email, but they will link to an attachment.
 
 We handle this by looking if there are available attachments and if so, replace
 them by their base64 value in the HTML output.
+
+## Webhook
+
+You can configure a webhook to receive the email data (see the email package).
