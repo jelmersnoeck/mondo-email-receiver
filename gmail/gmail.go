@@ -75,6 +75,11 @@ func (c *GmailClient) Email(id string) (email.Email, error) {
 	email.Body = getMessageBody(res.Payload.Parts)
 	email.Sender = getMessageSender(res.Payload.Headers)
 	email.Subject = getMessageSubject(res.Payload.Headers)
+	email.Attachments = c.getMessageAttachments(
+		res.Payload.Parts,
+		id,
+		c.srv.Users.Messages.Attachments,
+	)
 
 	return email, nil
 }
@@ -91,6 +96,40 @@ func getMessageBody(parts []*gmail.MessagePart) string {
 	}
 
 	return ""
+}
+
+func (c *GmailClient) getMessageAttachments(
+	parts []*gmail.MessagePart,
+	messageId string,
+	s *gmail.UsersMessagesAttachmentsService) []email.Attachment {
+
+	attachments := make([]email.Attachment, 0)
+
+	for _, part := range parts {
+		if len(part.Parts) == 0 {
+			if part.MimeType == "image/gif" {
+				gmailAttachment := s.Get(
+					c.email,
+					messageId,
+					part.Body.AttachmentId,
+				)
+				body, err := gmailAttachment.Do()
+
+				if err != nil {
+					continue
+				}
+
+				attachment := email.Attachment{
+					Body:     body.Data,
+					MimeType: part.MimeType,
+					Filename: part.Filename,
+				}
+				attachments = append(attachments, attachment)
+			}
+		}
+	}
+
+	return attachments
 }
 
 func getMessageSender(headers []*gmail.MessagePartHeader) string {
