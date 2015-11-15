@@ -107,7 +107,7 @@ func (c *GmailClient) getMessageAttachments(
 
 	for _, part := range parts {
 		if len(part.Parts) == 0 {
-			if part.MimeType == "image/gif" {
+			if isImageAttachment(part.MimeType) {
 				gmailAttachment := s.Get(
 					c.email,
 					messageId,
@@ -130,6 +130,23 @@ func (c *GmailClient) getMessageAttachments(
 	}
 
 	return attachments
+}
+
+var imageMimeTypes = []string{
+	"image/png",
+	"image/jpg",
+	"image/jpeg",
+	"image/gif",
+}
+
+func isImageAttachment(mime string) bool {
+	for _, tp := range imageMimeTypes {
+		if tp == mime {
+			return true
+		}
+	}
+
+	return false
 }
 
 func getMessageSender(headers []*gmail.MessagePartHeader) string {
