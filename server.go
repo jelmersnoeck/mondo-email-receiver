@@ -54,6 +54,7 @@ func main() {
 			}
 			defer resp.Body.Close()
 		}(jsonData)
+		return string(jsonData)
 
 		html, err := mail.HTML()
 
